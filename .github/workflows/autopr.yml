@@ -25,7 +25,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # 使用内置 token
+          token: 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  # 使用内置 token
           branch: auto-pr-${{ github.run_id }}  # 动态生成唯一分支名，避免重复
           base: main  # 目标合并分支
           title: "Automated PR: Updates from ${{ github.sha }}"
