@@ -33,7 +33,6 @@ public class T {
     }
 
     private static void prepareOneOrTwo() {
-        
         String largeNumber2 = "This is a large number2.";
         System.out.println("handleLargeNumber2: " + largeNumber2);
         String largeNumber = "This is a large number.";
