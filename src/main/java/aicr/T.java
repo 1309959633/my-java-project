@@ -17,18 +17,18 @@ public class T {
     }
 
     private static void handleLargeNumber() {
-        String largeNumber = "This is a large number";
+        String largeNumber = "This is a large number.";
         System.out.println("handleLargeNumber: " + largeNumber);
     }
 
     private static void handleOneTwoOrThree() {
-        String largeNumber = "This is a large number";
+        String largeNumber = "This is a large number.";
         System.out.println("handleOneTwoOrThree: " + largeNumber);
 
     }
 
     private static void prepareOneOrTwo() {
-        String largeNumber = "This is a large number";
+        String largeNumber = "This is a large number.";
         System.out.println("prepareOneOrTwo: " + largeNumber);
 
     }
