@@ -4,5 +4,6 @@
             "name": "JavaSE-21",
             "path": "/Users/wangpei/Documents/jdk/jdk-21.0.7.jdk/Contents/Home"
         }
-    ]
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
 }
