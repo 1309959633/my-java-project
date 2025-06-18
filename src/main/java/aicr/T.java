@@ -39,4 +39,10 @@ public class T {
         System.out.println("prepareOneOrTwo: " + largeNumber);
 
     }
+
+    private static void prepareOneOrFour() {
+        String largeNumber = "This is a large number.";
+        System.out.println("prepareOneOrTwo: " + largeNumber);
+
+    }
 }
