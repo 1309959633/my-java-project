@@ -1,0 +1,65 @@
+name: AI Review & Auto Fix
+on: [push]
+
+jobs:
+  review-and-fix:
+    runs-on: ubuntu-latest
+    container: node:20  # 沙箱环境
+    permissions:
+      contents: write  # 允许创建分支
+      pull-requests: write  # 允许创建PR
+
+    steps:
+      # 1. 检出代码 + 安装依赖
+      - uses: actions/checkout@v4
+      - run: npm install  # 根据项目调整
+
+      # 2. AI代码评审（使用diffguard）
+      - name: Run AI Review
+        id: ai-review
+        uses: jonit-dev/diffguard@main
+        with:
+          open_router_key: ${{ secrets.OPEN_ROUTER_KEY }}
+          model_id: "anthropic/claude-3.5"  # 高性能模型
+          custom_prompt: |
+            检查以下问题并生成修复补丁：
+            1. 安全漏洞（如XSS/SQL注入）
+            2. 代码坏味道（重复代码/未用变量）
+            3. 性能缺陷（循环嵌套/O(n²)算法）
+          output_format: "patch"  # 输出git补丁文件
+
+      # 3. 应用AI修复补丁（需确认有可修复问题）
+      - name: Apply AI Fixes
+        if: ${{ success() && steps.ai-review.outputs.patch_file }}
+        run: |
+          git apply ${{ steps.ai-review.outputs.patch_file }}
+          git add .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "AI自动修复: ${{ github.sha }}"
+
+      # 4. 创建修复分支并推送
+      - name: Create Fix Branch
+        id: create-branch
+        if: ${{ success() && steps.ai-review.outputs.patch_file }}
+        run: |
+          BRANCH_NAME="fix/${{ github.sha }}-${{ github.run_id }}"
+          git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
+
+      # 5. 发起PR（仅当有修复时触发）
+      - name: Create Pull Request
+        if: ${{ steps.create-branch.conclusion == 'success' }}
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.create-branch.outputs.BRANCH_NAME }}
+          base: main
+          title: "AI修复提交: ${{ github.commit_message }}"
+          body: |
+            **AI自动修复以下问题**:
+            ```diff
+            ${{ steps.ai-review.outputs.summary }}
+            ```
+            请人工验证后合并
+          labels: "ai-fix,needs-review"
